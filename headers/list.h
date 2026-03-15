@@ -4,16 +4,16 @@
 #include "common.h"
 
 typedef struct node {
-  node* next;
-  node* prev;
-  int key;
-  int value;
+    node* next;
+    node* prev;
+    int key;
+    int value;
 } node;
 
 typedef struct list {
-  node* head;
-  node* tail;
-  ull size;
+    node* head;
+    node* tail;
+    ull size;
 } list;
 
 

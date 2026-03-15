@@ -1,12 +1,9 @@
 #ifndef LIST_C
 #define LIST_C
 
-#include "common.h"
 #include "list.h"
 
 int list_create(list* l) {
-    if (!l) return -1;
-
     l->head = NULL;
     l->tail = NULL;
     l->size = 0;
@@ -15,17 +12,8 @@ int list_create(list* l) {
 }
 
 void list_free(list* l) {
-    if (!l) return;
-
-    node* n = l->head;
-    while (True) {
-        if (n->next == NULL) {
-            break;
-        }
-        else {
-            n = n->next;
-            free(n->prev);
-        }
+    while (l->size > 0) {
+        list_pop_front(l);
     }
 }
 
@@ -36,7 +24,6 @@ int list_push_back(list* l, int key, int value) {
     if (!new) return -1;
     new->value = value;
     new->key = key;
-    new->next = NULL;
     if (l->size == 0) {
         new->prev = NULL;
         l->head = new;
@@ -48,6 +35,7 @@ int list_push_back(list* l, int key, int value) {
         l->tail = new;
     }
     l->size++;
+    return 0;
 }
 
 int list_push_front(list* l, int key, int value) {
@@ -57,7 +45,6 @@ int list_push_front(list* l, int key, int value) {
     if (!new) return -1;
     new->value = value;
     new->key = key;
-    new->prev = NULL;
     if (l->size == 0) {
         new->next = NULL;
         l->head = new;
@@ -69,13 +56,14 @@ int list_push_front(list* l, int key, int value) {
         l->head = new;
     }
     l->size++;
+    return 0;
 }
 
 int list_pop_back(list* l) {
     if (!l) return -1;
 
     if (l->size == 1) {
-        free(l->head);
+        free(l->tail);
         l->head = NULL;
         l->tail = NULL;
         l->size = 0;
@@ -86,6 +74,7 @@ int list_pop_back(list* l) {
         l->tail->next = NULL;
         l->size--;
     }
+    return 0;
 }
 
 int list_pop_front(list* l) {
@@ -97,12 +86,34 @@ int list_pop_front(list* l) {
         l->tail = NULL;
         l->size = 0;
     }
-    else if (l->size > 1) {             
+    else if (l->size > 0) {             
         l->head = l->head->next;
-        free(l->head->prev);
+        free(l->head);
         l->head->prev = NULL;
         l->size--;
     }
+    return 0;
+}
+
+int list_pop(list* l, node* n) {
+    if (!l) return -1;
+    if (!n) return -1;
+
+    if (l->size == 1) {
+        l->size = 0;
+        free(n);
+        l->head = NULL;
+        l->tail = NULL;
+    } else if (l->size > 1) {
+        if (l->head == n) l->head = n->next;
+        if (l->tail == n) l->tail = n->prev;
+
+        n->prev->next = n->next;
+        n->next->prev = n->prev;
+        free(n);
+    }
+
+    return 0;
 }
 
 #endif // LIST_C
